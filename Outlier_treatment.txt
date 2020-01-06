@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-dd = pd.read_excel("Filtered_Data.xlsx")
+dd = pd.read_excel("abcd_data.xlsx")
 
 def keep_cols(DataFrame, keep_these):
     """Keep only the columns [keep_these] in a DataFrame, delete
@@ -10,10 +10,10 @@ def keep_cols(DataFrame, keep_these):
     drop_these = list(set(list(DataFrame)) - set(keep_these))
     return DataFrame.drop(drop_these, axis = 1)
 
-dd = dd.pipe(keep_cols, ['Lot Number',
-'Lot ACV $',
-'Total Advance Charges',
-'Repair Cost',
+dd = dd.pipe(keep_cols, ['Column1',
+'column2',
+'column3',
+'column4',
 ])
 
 

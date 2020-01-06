@@ -1,0 +1,54 @@
+import numpy as np
+import pandas as pd
+
+dd = pd.read_excel("Filtered_Data.xlsx")
+
+def keep_cols(DataFrame, keep_these):
+    """Keep only the columns [keep_these] in a DataFrame, delete
+    all other columns. 
+    """
+    drop_these = list(set(list(DataFrame)) - set(keep_these))
+    return DataFrame.drop(drop_these, axis = 1)
+
+dd = dd.pipe(keep_cols, ['Lot Number',
+'Lot ACV $',
+'Total Advance Charges',
+'Repair Cost',
+])
+
+
+def outlier_detect_low(df):
+    for i in df.describe().columns:
+        Q1=np.percentile(df[i],1)
+        LTV=Q1
+        print(LTV)
+        p=[]
+        for j in df[i]:
+            if j < LTV:
+                p.append(LTV)
+            else:
+                p.append(j)
+        df[i]=p
+        
+    return df
+
+dd1=outlier_detect_low(dd)
+
+def outlier_detect_high(df):
+    for i in df.describe().columns:
+        Q99=np.percentile(df[i],99)
+        UTV=Q99
+        print(UTV)
+        p=[]
+        for j in df[i]:
+            if j > UTV:
+                p.append(UTV)
+            else:
+                p.append(j)
+        df[i]=p
+        
+    return df
+
+dd1=outlier_detect_high(dd1)
+
+str=dd1.describe(percentiles=[0.01, 0.10, 0.25, 0.5,0.75,0.90,0.95,0.99]).T

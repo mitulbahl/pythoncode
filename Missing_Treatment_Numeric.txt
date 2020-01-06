@@ -2,10 +2,8 @@
 """
 Created on Wed Dec 18 17:59:55 2019
 
-@author: 703177599
-"""
 
-dd = pd.read_excel("Filtered_Data.xlsx")
+dd = pd.read_excel("abcd_data.xlsx")
 
 import pandas as pd
 import numpy as np
@@ -34,4 +32,4 @@ def impute_with_median (df):
     return df   
 
 dd1 = impute_with_median(dd)
-dd1['Residential PU'].value_counts()
+dd1['col_name'].value_counts()

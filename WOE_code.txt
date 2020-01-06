@@ -2,7 +2,6 @@
 """
 Created on Tue Dec 17 18:20:44 2019
 
-@author: 703177599
 """
 import pandas.core.algorithms as algos
 import pandas as pd
@@ -14,20 +13,13 @@ import re
 import traceback
 warnings.filterwarnings('ignore')
 
-df2=strat_train_set[[
-'Lot Type',
-'Lot Category',
-'Loss Type',
-'Damage_Type_Gr',
-'Lot Run Condition',
-'Keys',
-'Copart Facility Name',
-'Copart Facility State',
-'Seller_Title_Type_Gr',
-'Lot ACV $',
-'Total Advance Charges',
-'Repair Cost',
-'Residential PU',
+df2=train_set_stratified[[
+'column1',
+'column2',
+'column3',
+'column4',
+'column5',
+'column6',
 'target_var'
 ]]
 

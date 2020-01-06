@@ -1,0 +1,37 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Dec 18 17:59:55 2019
+
+@author: 703177599
+"""
+
+dd = pd.read_excel("Filtered_Data.xlsx")
+
+import pandas as pd
+import numpy as np
+
+def impute_with_median (df):
+    """Iterate through columns of Pandas DataFrame.
+    Where NaNs exist replace with median"""
+    cols = df.select_dtypes([np.number]).columns
+    
+    print(cols)
+    ###cols = df.select_dtypes([np.int64,np.float64]).columns
+    
+    # Get list of DataFrame column names
+    ##cols = list(df)
+    # Loop through columns
+    for column in cols:
+        # Transfer column to independent series
+        col_data = df[column]
+        # Look to see if there is any missing numerical data
+        missing_data = sum(col_data.isna())
+        if missing_data > 0:
+            # Get median and replace missing numerical data with median
+            col_median = col_data.median()
+            col_data.fillna(col_median, inplace=True)
+            df[column] = col_data
+    return df   
+
+dd1 = impute_with_median(dd)
+dd1['Residential PU'].value_counts()

@@ -1,0 +1,10 @@
+logreg.fit(X, y)
+coefs1 = (logregn.coef_[0])
+indices = np.argsort(coefs)[::-1]
+
+plt.figure()
+plt.title("Feature importances (Logistic Regression)")
+plt.bar(range(9), coefs[indices[:9]],
+       color="r", align="center")
+plt.xticks(range(9), X.columns[indices[:9]], rotation=45, ha='right')
+plt.subplots_adjust(bottom=0.3)

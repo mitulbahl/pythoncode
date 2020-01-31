@@ -1,0 +1,18 @@
+
+####create your own training dataset
+
+cols = train_data.select_dtypes([np.object]).columns
+print(cols)
+
+for var in cols:
+    cat_list='var'+'_'+var
+    cat_list = pd.get_dummies(train_data[var], prefix=var)
+    train_data=train_data.join(cat_list)
+    train_data=train_data
+
+data_vars=train_data.columns.values.tolist()
+to_keep=[i for i in data_vars if i not in cols]
+print(to_keep)
+
+data_test_x=train_data[to_keep]
+data_test_x.columns.values

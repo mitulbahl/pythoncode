@@ -1,0 +1,58 @@
+###Training KS
+
+###X_train is the dataframe with all the independent variables of the model
+
+ksdatatrn = pd.DataFrame(x_train)
+ksdatatrn['p'] = logregn.predict_proba(x_test)[:,1]
+ksdatatrn['y'] = y_test
+ksdatatrn1 = ksdatatrn[['y','p']] 
+
+data= ksdatatrn1.sort_values(by='p',ascending=False)
+data['row_id'] = range(0,0+len(data))
+data['decile'] = ( data['row_id'] / (len(data)/10) ).astype(int)
+ # Check the count by decile
+data.loc[data['decile'] == 10]=9
+data['decile'].value_counts()
+#create gains table
+gains = data.groupby('decile')['y'].agg(['count','sum'])
+gains.columns = ['count','actual']
+gains
+#add metrics to the gains table
+gains['non_actual'] = gains['count'] - gains['actual']
+
+gains['cum_count'] = gains['count'].cumsum()
+gains['cum_actual'] = gains['actual'].cumsum()
+gains['cum_non_actual'] = gains['non_actual'].cumsum()
+gains['percent_cum_actual'] = (gains['cum_actual'] / np.max(gains['cum_actual'])).round(2)
+gains['percent_cum_non_actual'] = (gains['cum_non_actual'] / np.max(gains['cum_non_actual'])).round(2)
+gains['if_random'] = np.max(gains['cum_actual']) /10 
+gains['if_random'] = gains['if_random'].cumsum()
+gains['lift'] = (gains['cum_actual'] / gains['if_random']).round(2)
+gains['K_S'] = np.abs( gains['percent_cum_actual'] - gains['percent_cum_non_actual'] ) * 100
+gains['gain']=(gains['cum_actual']/gains['cum_count']*100).round(2)
+gains = pd.DataFrame(gains)
+
+###Test KS
+data= ksdatatest1.sort_values(by='p',ascending=False)
+data['row_id'] = range(0,0+len(data))
+data['decile'] = ( data['row_id'] / (len(data)/10) ).astype(int)
+ # Check the count by decile
+data.loc[data['decile'] == 10]=9
+data['decile'].value_counts()
+#create gains table
+gainstest = data.groupby('decile')['y'].agg(['count','sum'])
+gainstest.columns = ['count','actual']
+gainstest
+#add metrics to the gains table
+gainstest['non_actual'] = gainstest['count'] - gainstest['actual']
+gainstest['cum_count'] = gainstest['count'].cumsum()
+gainstest['cum_actual'] = gainstest['actual'].cumsum()
+gainstest['cum_non_actual'] = gainstest['non_actual'].cumsum()
+gainstest['percent_cum_actual'] = (gainstest['cum_actual'] / np.max(gainstest['cum_actual'])).round(2)
+gainstest['percent_cum_non_actual'] = (gainstest['cum_non_actual'] / np.max(gainstest['cum_non_actual'])).round(2)
+gainstest['if_random'] = np.max(gainstest['cum_actual']) /10 
+gainstest['if_random'] = gainstest['if_random'].cumsum()
+gainstest['lift'] = (gainstest['cum_actual'] / gainstest['if_random']).round(2)
+gainstest['K_S'] = np.abs( gainstest['percent_cum_actual'] - gainstest['percent_cum_non_actual'] ) * 100
+gainstest['gain']=(gainstest['cum_actual']/gainstest['cum_count']*100).round(2)
+gainstest = pd.DataFrame(gainstest)

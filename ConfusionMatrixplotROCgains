@@ -1,0 +1,65 @@
+# import required modules
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+%matplotlib inline
+
+accuracy = np.trace(confusion_matrix) / np.sum(confusion_matrix).astype('float')
+misclass = 1 - accuracy
+class_names=[0,1] # name  of classes
+fig, ax = plt.subplots()
+tick_marks = np.arange(len(class_names))
+plt.xticks(tick_marks, class_names)
+plt.yticks(tick_marks, class_names)
+# create heatmap
+sns.heatmap(pd.DataFrame(confusion_matrix), annot=True, cmap="YlGnBu" ,fmt='g')
+bottom, top = ax.get_ylim()
+ax.set_ylim(bottom + 0.5, top - 0.5)
+ax.xaxis.set_label_position("top")
+plt.tight_layout()
+plt.title('Confusion matrix', y=1.1)
+plt.ylabel('Actual label')
+plt.xlabel('Predicted label')
+plt.xlabel('Predicted label\naccuracy={:0.4f}; misclass={:0.4f}'.format(accuracy, misclass))
+
+#Text(0.5,257.44,'Predicted label')
+
+y_pred_proba = logreg.predict_proba(trn_x)[:,1]
+ns_probs = [0 for _ in range(len(y_trn))]
+ns_fpr, ns_tpr, _ = metrics.roc_curve(y_trn, ns_probs)
+lr_fpr, lr_tpr, _ = metrics.roc_curve(y_trn, y_pred_proba)
+auc = metrics.roc_auc_score(y_trn, y_pred_proba)
+plt.plot(ns_fpr, ns_tpr, linestyle='--')
+plt.plot(lr_fpr, lr_tpr, marker='.', label='Train_Data auc='+str(auc))
+plt.legend(loc=4)
+# axis labels
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+# show the legend
+#plt.legend()
+# show the plot
+plt.show()
+
+#fpr, tpr, threshold = metrics.roc_curve(y_test,  y_pred_proba)
+#roc_auc = metrics.auc(fpr, tpr)
+#plt.title('Receiver Operating Characteristic')
+#plt.legend(loc = 'lower right')
+#plt.plot([0, 1], [0, 1],'r--')
+#plt.xlim([0, 1])
+#plt.ylim([0, 1])
+#plt.ylabel('True Positive Rate')
+#plt.xlabel('False Positive Rate')
+	
+
+gainschart = gains[['percent_cum_actual']]
+gainschart.reset_index()
+gainschart.columns = ['default_cum%_trn']
+gainschart["default_cum%_test"] = gainstest[['percent_cum_actual']]
+gainschart['Base %'] = [0.10,0.20,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1]
+
+gains_chart = gainschart.plot(kind='line',use_index=False)
+gains_chart.set_ylabel("Proportion of Events",fontsize=12)
+gains_chart.set_xlabel("Decile",fontsize=12)
+gains_chart.set_title("Gains Chart")
+

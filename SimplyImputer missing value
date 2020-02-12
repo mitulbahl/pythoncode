@@ -1,0 +1,13 @@
+# make copy to avoid changing original data (when Imputing)
+new_data = original_data.copy()
+
+# make new columns indicating what will be imputed
+cols_with_missing = (col for col in new_data.columns 
+                                 if new_data[col].isnull().any())
+for col in cols_with_missing:
+    new_data[col + '_was_missing'] = new_data[col].isnull()
+
+# Imputation
+my_imputer = SimpleImputer()
+new_data = pd.DataFrame(my_imputer.fit_transform(new_data))
+new_data.columns = original_data.columns

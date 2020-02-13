@@ -11,3 +11,19 @@ for col in cols_with_missing:
 my_imputer = SimpleImputer()
 new_data = pd.DataFrame(my_imputer.fit_transform(new_data))
 new_data.columns = original_data.columns
+
+my_imputer.fit_transform(new_data)
+
+import pickle
+# save the model to disk
+filename = 'missing_model.sav'
+pickle.dump(my_imputer, open(filename, 'wb'))
+
+
+import pickle
+
+filename = 'missing_model.sav'
+loaded_model = pickle.load(open(filename, 'rb'))
+result = loaded_model.score(test_data)
+testdata.columns = original_data.columns
+print(result)

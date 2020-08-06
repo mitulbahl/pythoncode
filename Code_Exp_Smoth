@@ -1,0 +1,124 @@
+# Importing Python Package
+
+import pandas as pd
+import numpy as np
+import datetime
+
+from pandasql import sqldf
+
+import pandasql as psql
+
+# Getting the Raw excel file  in python Dataframe
+
+data= pd.read_excel ("abc.xlsx", sheet_name = 'def')
+
+data.dtypes
+
+data.rename(columns={'X1': 'X'}, inplace=True)
+
+data.rename(columns={'X2': 'X22'}, inplace=True)
+
+data.rename(columns={'X3': 'X33'}, inplace=True)
+
+del data['Y1']
+del data['Col_Y2']
+del data['Col_Y3']
+
+# Summarizing the Datafile  
+
+data["n_date"]=pd.to_datetime(data["o_date"])
+
+data1= data[['o_date','tt']]
+
+data1['n_date'] = data1['n_date'].dt.date
+
+
+data2 = psql.sqldf("select n_date, count(*) as sales from data1 where tt = 'xxx' group by n_date")
+
+data2 ['n_date'] = pd.to_datetime(data2 ["n_date"])
+
+
+
+data2['weekday'] = data2['n_date'].dt.dayofweek
+
+data2.dtypes
+
+num_days=[]
+
+for row in data2['weekday']:
+    
+    if row == 5:
+        
+        num_days.append(2)
+                 
+    elif row == 6:
+        
+        num_days.append(1)
+    
+    else:   
+        
+        num_days.append(0)
+        
+data2['num_days'] = num_days 
+
+data2['date2'] = data2['n_date'] + pd.to_timedelta(data2['num_days'], unit='d')
+
+data2.dtypes
+
+data3 = psql.sqldf("select date2, sum(sales) as total_sales from data2 group by date2")
+ 
+data3.info()
+
+# importing timeseries package for forecasting
+
+from statsmodels.tsa.api import ExponentialSmoothing, SimpleExpSmoothing,Holt 
+
+# Data Split to Training and Validation
+
+train = data3.iloc[0:100, :]
+
+test = data3.iloc[101:, :]
+
+train.set_index('date2',inplace=True)
+
+train.plot()
+
+#Model fit with seasonal period and trend included
+
+fit1 = ExponentialSmoothing(np.asarray(train['total_sales']) ,seasonal_periods=5 ,trend='add', seasonal='add',).fit()
+
+#Testing model performance on the Validation data
+
+y_hat_avg = test.copy()
+
+y_hat_avg['SES'] = fit1.forecast(len(test))
+
+test.dtypes
+
+df_new = test.copy()
+
+#Getting Forecast for next 30 days from the model and exporting it to csv file
+
+test_new =df_new.append(pd.DataFrame({'date2': pd.date_range(start=df_new.date2.iloc[-1], periods=30, freq='D', closed='right')}))
+
+test_new['forecast'] = fit1.forecast(len(test_new))
+
+test_new.dtypes
+
+test_new['date2'] = pd.to_datetime(test_new['date2'])
+
+test_new['weekday'] = test_new['date2'].dt.dayofweek
+
+test_new1 = psql.sqldf("select * from test_new where weekday in(0,1,2,3,4)")
+
+train_new = train.copy()
+
+train_new.reset_index(level=0, inplace=True)
+
+train_new.dtypes
+
+train_new['date2'] = pd.to_datetime(train_new['date2'])
+
+data = pd.concat([train_new,test_new1])
+
+data.to_csv("data.csv")
